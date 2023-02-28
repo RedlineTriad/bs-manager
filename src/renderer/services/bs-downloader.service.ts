@@ -1,4 +1,4 @@
-import { DownloadEvent } from 'main/services/bs-installer.service';
+import { DownloadEvent, DownloadInfo } from 'main/services/bs-installer.service';
 import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, throttleTime } from 'rxjs/operators';
 import { IpcResponse } from 'shared/models/ipc';
@@ -11,6 +11,7 @@ import { NotificationService } from './notification.service';
 import { ProgressBarService } from './progress-bar.service';
 import { LoginModal } from 'renderer/components/modal/modal-types/login-modal.component';
 import { GuardModal } from 'renderer/components/modal/modal-types/guard-modal.component';
+import { LinkOpenerService } from './link-opener.service';
 
 export class BsDownloaderService{
 
@@ -22,6 +23,7 @@ export class BsDownloaderService{
     private readonly authService: AuthUserService;
     private readonly progressBarService: ProgressBarService;
     private readonly notificationService: NotificationService;
+    private readonly linkOpener: LinkOpenerService;
 
     private _isVerification: boolean = false;
 
@@ -41,6 +43,7 @@ export class BsDownloaderService{
         this.authService = AuthUserService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();
         this.notificationService = NotificationService.getInstance();
+        this.linkOpener = LinkOpenerService.getInstance();
         this.asignListerners();
     }
 
@@ -49,7 +52,7 @@ export class BsDownloaderService{
 
       this.ipcService.watch<string>("bs-download.[SteamID]").pipe(filter(r => r.success && !!r.data)).subscribe(response => this.authService.setSteamID(response.data));
 
-      this.ipcService.watch<string>("bs-download.[Warning]").pipe(filter(v => !!v && !!v.data),  distinctUntilChanged(), throttleTime(1000)).subscribe(warning => {
+      this.ipcService.watch<string>("bs-download.[Warning]").pipe(filter(v => !!v && !!v.data),  distinctUntilChanged(), throttleTime(10_000)).subscribe(warning => {
          this.notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.warnings.msg.${warning.data}`});
       });
 
@@ -68,10 +71,15 @@ export class BsDownloaderService{
          this.ipcService.sendLazy('bs-download.[2FA]', {args: res.data});
       });
 
+      this.ipcService.watch<BSVersion>("start-download-version").subscribe(res => {
+        this.currentBsVersionDownload$.next(res.data);
+      });
+
       this.currentBsVersionDownload$.subscribe(version => {
          if(version){ this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]); }
          else{ this.bsVersionManager.askInstalledVersions(); }
       });
+      
     }
 
     private resetDownload(): void{
@@ -84,11 +92,31 @@ export class BsDownloaderService{
       return this.ipcService.send<boolean>("bs-download.kill");
    }
 
+    public isDotNet6Installed(): Promise<boolean>{
+        return this.ipcService.send<boolean>("is-dotnet-6-installed").then(res => res.success && res.data)
+    }
+
    public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall = true): Promise<IpcResponse<DownloadEvent>>{
       if(isFirstCall && !this.progressBarService.require()){ return {success: false}; }
 
+      if(isFirstCall && !(await this.isDotNet6Installed())){
+
+        const choice = await this.notificationService.notifyError({
+            duration: 11_000,
+            title: "notifications.bs-download.errors.titles.dotnet-required",
+            desc: "notifications.bs-download.errors.msg.dotnet-required",
+            actions: [{id: "0", title: "notifications.bs-download.errors.actions.download-dotnet"}]
+        });
+
+        if(choice === "0"){
+            this.linkOpener.open("https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.12-windows-x64-installer");
+        }
+
+        return {success: false};
+      }
+
       this.progressBarService.show(this.downloadProgress$);
-      this._isVerification = !!isVerification;
+      this._isVerification = isVerification;
 
       let promise;
       if(!this.authService.sessionExist()){
@@ -98,13 +126,11 @@ export class BsDownloaderService{
             return {success: false}; 
         }
          this.authService.setSteamSession(res.data.username, res.data.stay);
-         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay}});
+         promise = this.ipcService.send<DownloadEvent, DownloadInfo>('bs-download.start', {args: {bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay, isVerification}});
       }
       else{
-         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion, username: this.authService.getSteamUsername()}});
+         promise = this.ipcService.send<DownloadEvent, DownloadInfo>('bs-download.start', {args: {bsVersion, username: this.authService.getSteamUsername(), isVerification}});
       }
-
-      this.currentBsVersionDownload$.next(bsVersion);
 
       let res = await promise;
         
@@ -122,15 +148,21 @@ export class BsDownloaderService{
    }
 
    public get isDownloading(): boolean{ return !!this.currentBsVersionDownload$.value; }
-   public get isVerification(): boolean{ return this._isVerification; }
 
    public async getInstallationFolder(): Promise<string>{
       const res = await this.ipcService.send<string>("bs-download.installation-folder");
       return res.success ? res.data : "";
    }
 
+   public get isVerification(): boolean{ return this._isVerification; }
+
    public setInstallationFolder(path: string): Promise<IpcResponse<string>>{
       return this.ipcService.send<string>("bs-download.set-installation-folder", {args: path});
+   }
+
+   public async importVersion(pathToImport: string): Promise<boolean>{
+      const res = await this.ipcService.send<void>("bs-download.import-version", {args: pathToImport});
+      return res.success;
    }
 
 }

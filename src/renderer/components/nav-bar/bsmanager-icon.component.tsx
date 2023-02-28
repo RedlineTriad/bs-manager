@@ -1,19 +1,42 @@
 import { memo } from "react"
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
+import { useObservable } from "renderer/hooks/use-observable.hook";
+import { AudioPlayerService } from "renderer/services/audio-player.service";
+
+// Thanks to cheddZy for the icon : https://github.com/cheddZy
 
 export const BsManagerIcon = memo(({className}: {className?: string}) => {
 
+    const audioPlayer = AudioPlayerService.getInstance();
+
     const {firstColor, secondColor} = useThemeColor();
+    const playing= useObservable(audioPlayer.playing$);
+
+    const bpm = audioPlayer.bpm;
+
+    const transitions: Variants = {
+        playing: {
+            scale: [1, 1.05, 1],
+            transition: {repeat: Infinity, duration: ((60/bpm))/2, repeatDelay: ((60/bpm))/2}
+        },
+        idle: {}
+    }
+
+    const clickAction = () => {
+        if(playing){
+            audioPlayer.pause();
+        }
+    }
 
   return (
-    <motion.div className="cursor-pointer" whileTap={{rotate: -10}}>
+    <motion.div className="cursor-pointer" whileTap={{rotate: -10}} variants={transitions} animate={playing && bpm > 0 ? "playing" : "idle"} onClick={clickAction}>
         <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
             <g fill={firstColor}>
                 <path d="M626.75,485.91l20.82,351.94a35.21,35.21,0,0,1-15.49,31.36L487.37,965.35l-.06,0A35.56,35.56,0,0,1,476,970.12a34.85,34.85,0,0,1-23.51-2.87L136.58,809.9a115.45,115.45,0,0,1-63.75-96.49L52,361.46a35.26,35.26,0,0,1,15.23-31.21l145.05-96.36a35.72,35.72,0,0,1,11.27-4.7,34.87,34.87,0,0,1,23.51,2.87L563,389.42a115.41,115.41,0,0,1,63.75,96.49Z"/>
                 <path filter="brightness(30%)" d="M613.78,486.67l20.82,352a22.34,22.34,0,0,1-32.26,21.31L286.4,702.57A102.43,102.43,0,0,1,229.83,617L209,265a22.35,22.35,0,0,1,32.26-21.32L557.2,401.05A102.42,102.42,0,0,1,613.78,486.67Z"/>
             </g>
-            <g fill="#fff">
+            <g className="text-white stroke-black stroke-[2px] dark:stroke-0" fill="currentColor">
                 <path d="M718.29,776.48,700,804.18c-40.63,39.5-87.06,67.25-133.81,90.75-87.32,43.9-203.67,77.19-249,90.34a48,48,0,0,1-26.17.16c-64-17.72-188.62-72-236.28-125.49a4.23,4.23,0,0,1,5.3-6.45c35.64,20.87,111.22,57.64,156.37,74.22,49.18,18.06,81.29,8.74,92.28-3.26a4.77,4.77,0,0,1,7.24.21c19.51,24,107.26,4.6,166.64-13C546.91,892.66,668.42,835.1,718.29,776.48Z"/>
                 <path d="M522.09,933.81,374.64,989.49a3.92,3.92,0,0,0,1.44,7.58l54.62-.77a35.63,35.63,0,0,0,19-5.79l76-49.55A4,4,0,0,0,522.09,933.81Z"/>
                 <path d="M218.92,195.56c-21.14.07-33.55,35.86-33.16,89.08.2,28,2.58,92.74,4.79,147.73.23,5.71-8.18,6.48-9,.81L143.13,162.47a4.38,4.38,0,0,1,7.12-4,63.63,63.63,0,0,0,21.93,11.85,4.61,4.61,0,0,0,5.9-3.72c4.2-27.7,16.63-58.74,37.35-88.74a4.36,4.36,0,0,1,7.56.69c10.86,23.87,49,103.8,93.34,152.79a4.65,4.65,0,0,1-5.62,7.22C274.14,219.18,227.7,195.54,218.92,195.56Z"/>
