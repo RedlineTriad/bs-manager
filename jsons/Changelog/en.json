@@ -1,5 +1,5 @@
 {
     "title":"What's new",
-    "body":"<ul><li>Added feature X</li><li>Fixed issue Y</li><li>Improved performance</li></ul>",
-    "version":"1.0.4"
+    "body": "<p>Hello to new contributors 👋</p><p>We have corrected some of your feedback and made improvements 😉</p><h2>Features</h2><ul><li>Add volume control #154</li></ul><h2>Fixes</h2><ul><li>Fix some English translations #153 #151 #167</li><li>The debug console does not open #158</li><li>Can't enable Oculus and Desktop mode in the same time #159</li><li>Pause Map song on open preview #160</li><li>Reduces map loading time by 20 to 40% depending on configuration (still work on that) #161</li><li>Mods menu partially hidden when no mods listed #165</li><li>Fix light theme issues #168</li><li>The .NET installation request notification sometimes does not appear #170</li><li>Change Oculus Mode description #166</li></ul><h2>Other changes</h2><ul><li>We have added an explanation of why we need your Steam credentials to download a BeatSaber version #164</li></ul>",
+  "version": "1.0.4"
 }
