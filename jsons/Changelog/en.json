@@ -1,5 +1,5 @@
 {
     "title":"What's new",
-    "body":"<ul className='text-3xl'><li>Added feature X</li><li>Fixed issue Y</li><li>Improved performance</li></ul>",
+    "body":"<ul className='text-3xl uppercase'><li>Added feature X</li><li>Fixed issue Y</li><li>Improved performance</li></ul>",
     "version":"1.0.4"
 }
