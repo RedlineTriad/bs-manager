@@ -1,5 +1,6 @@
 {
     "title":"What's new",
-    "body":"",
+    "body":"<ul><li>Added feature X</li><li>Fixed issue Y</li><li>Improved performance</li></ul>",
+  ",
     "version":"1.0.4"
 }
