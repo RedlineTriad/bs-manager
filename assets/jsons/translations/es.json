@@ -475,7 +475,7 @@
                     "max-length-warning": "¡La contraseña supera los 64 caracteres! Si la contraseña es inválida, intenta ingresar solo sus primeros 64 caracteres." 
                 },
                 "stay": {
-                    "label": "Manténgase conectado"
+                    "label": "Recordarme"
                 }
             },
             "why-credentials": "¿Por qué necesitas mis credenciales?",

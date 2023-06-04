@@ -5,6 +5,8 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalComponent, ModalExitCode, ModalService } from "renderer/services/modale.service";
 import BeatImpatient from '../../../../../assets/images/apngs/beat-impatient.png'
 import { WhyCredentialsModal } from "./why-credentials-modal.component";
+import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
+import Tippy from "@tippyjs/react";
 
 export const LoginModal: ModalComponent<{username: string, password: string, stay: boolean}> = ({resolver}) => {
 
@@ -25,7 +27,7 @@ export const LoginModal: ModalComponent<{username: string, password: string, sta
     }
 
   return (
-    <form className="max-w-xs" onSubmit={(e) => {e.preventDefault(); loggin();}}>
+    <form className="max-w-sm" onSubmit={(e) => {e.preventDefault(); loggin();}}>
         <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.steam-login.title")}</h1>
         <BsmImage className="mx-auto h-20" image={BeatImpatient} />
         
@@ -41,7 +43,14 @@ export const LoginModal: ModalComponent<{username: string, password: string, sta
             )}
         </div>
 
-        <span onClick={whyCredentials} className="underline my-4 block cursor-pointer">{t("modals.steam-login.why-credentials")}</span>
+        <div className="flex items-center content-center justify-start mb-1">
+            <BsmCheckbox onChange={v => setStay(v)} checked={stay} className="mr-1 w-5 h-5 relative z-[1]"/>
+            <Tippy content="La prochaine fois que tu téléchargeras une version, tu n'auras pas besoin de saisir ton mot de passe ni de confirmer ta connexion." className="!bg-main-color-1 shadow-black shadow-sm" hideOnClick={false} placement="bottom-start" arrow={false} delay={[300, 0]}>
+                <label className="cursor-pointer text-gray-800 dark:text-gray-200" onClick={() => setStay(prev => !prev)}>{t("modals.steam-login.inputs.stay.label")}</label>
+            </Tippy>
+        </div>
+
+        <span onClick={whyCredentials} className="underline mb-4 block cursor-pointer">{t("modals.steam-login.why-credentials")}</span>
 
         <div className="grid grid-flow-col grid-cols-2 gap-4">
             <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>

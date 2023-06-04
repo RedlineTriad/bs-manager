@@ -476,7 +476,7 @@
                     "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur die ersten 64 Zeichen einzugeben." 
                 },
                 "stay": {
-                    "label": "Verbunden bleiben"
+                    "label": "Angemeldet bleiben"
                 }
             },
             "why-credentials": "Warum braucht ihr meine Anmeldeinformationen?",

@@ -476,7 +476,7 @@
                     "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to put its first 64 characters." 
                 },
                 "stay": {
-                    "label": "Stay connected"
+                    "label": "Remember me"
                 }
             },
             "why-credentials": "Why do you need my credentials ?",
