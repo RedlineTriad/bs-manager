@@ -21,6 +21,7 @@ import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties
 import useDoubleClick from "use-double-click";
 import { GlowEffect } from "../shared/glow-effect.component";
 import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
@@ -52,8 +53,8 @@ export type MapItemProps<T = any> = {
 
 export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick}: MapItemProps) => {
 
-    const linkOpener = LinkOpenerService.getInstance();
-    const audioPlayer = AudioPlayerService.getInstance();
+    const linkOpener = useService(LinkOpenerService);
+    const audioPlayer = useService(AudioPlayerService);
 
     const color = useThemeColor("first-color");
     const t = useTranslation();

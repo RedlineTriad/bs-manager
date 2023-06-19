@@ -1,13 +1,14 @@
-import { BsmButton } from "renderer/components/shared/bsm-button.component";
+import { useService } from "renderer/hooks/use-service.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
-import { ModalComponent, ModalExitCode } from "renderer/services/modale.service"
+import { ModalComponent } from "renderer/services/modale.service"
 
 export const WhyCredentialsModal: ModalComponent<void> = ({resolver}) => {
 
-    const t = useTranslation();
-    const linkOpener = LinkOpenerService.getInstance();
+    const linkOpener = useService(LinkOpenerService);
 
+    const t = useTranslation();
+    
     const openTutorial = () => {
         linkOpener.open("https://steamcommunity.com/sharedfiles/filedetails/?id=1805934840");
     }

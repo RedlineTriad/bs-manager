@@ -8,10 +8,11 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import BeatConflict from '../../../../../assets/images/apngs/beat-conflict.png'
+import { useService } from "renderer/hooks/use-service.hook";
 
 export const DeleteMapsModal: ModalComponent<void, {linked: boolean, maps: BsmLocalMap[]}> = ({resolver, data:{linked, maps}}) => {
 
-    const config = ConfigurationService.getInstance();
+    const config = useService(ConfigurationService);
 
     const t = useTranslation();
 
@@ -38,7 +39,7 @@ export const DeleteMapsModal: ModalComponent<void, {linked: boolean, maps: BsmLo
             {linked && <p className="text-sm italic mt-2 cursor-help w-fit" title={t(infoTitleText)}>{t(infoText)}</p>}
             {!multiple && (
                 <div className="flex items-center relative py-2 gap-1 mt-1">
-                    <BsmCheckbox className="h-5 relative z-[1]" checked={remember} onChange={(val) => setRemember(val)}/>
+                    <BsmCheckbox className="h-5 relative z-[1]" checked={remember} onChange={val => setRemember(() => val)}/>
                     <span className="italic">{t("modals.misc.remember-my-choice")}</span>
                 </div>
             )}

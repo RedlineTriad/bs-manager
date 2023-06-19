@@ -64,9 +64,9 @@ export class BSVersionManagerService {
         });
     }
 
-   public getAvailableYears(): string[]{
-      return [...new Set(this.availableVersions$.value.map(v => v.year))].sort((a, b) => b.localeCompare(a));
-   }
+    public getAvailableYearsOfVersions(versions?: BSVersion[]): string[]{
+        return [...new Set(versions.map(v => v.year))].sort((a, b) => b.localeCompare(a));
+    }
 
    public isVersionInstalled(version: BSVersion): boolean{
       return !!this.getInstalledVersions().find(v => v.BSVersion === version.BSVersion && v.steam === version.steam && v.oculus === version.oculus);

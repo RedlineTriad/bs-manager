@@ -10,35 +10,36 @@ import { BsmIcon } from "../svgs/bsm-icon.component";
 import { LinkOpenerService } from 'renderer/services/link-opener.service';
 import { motion } from 'framer-motion';
 import { GlowEffect } from '../shared/glow-effect.component';
+import { useService } from 'renderer/hooks/use-service.hook';
 
 export const AvailableVersionItem = memo(function AvailableVersionItem(props: {version: BSVersion}) {
 
-  const bsDownloaderService = BsDownloaderService.getInstance();
-  const linkOpener = LinkOpenerService.getInstance();
+    const bsDownloaderService = useService(BsDownloaderService);
+    const linkOpener = useService(LinkOpenerService);
 
-  const [selected, setSelected] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const t = useTranslation();
+    const [selected, setSelected] = useState(false);
+    const [hovered, setHovered] = useState(false);
+    const t = useTranslation();
 
-  const formatedDate = (() => { return dateFormat(+props.version.ReleaseDate*1000, "ddd. d mmm yyyy"); })()
+    const formatedDate = (() => { return dateFormat(+props.version.ReleaseDate*1000, "ddd. d mmm yyyy"); })()
 
-  const toggleSelect = () => {
-    if(bsDownloaderService.isDownloading){ return; }
-    if(selected){ bsDownloaderService.selectedBsVersion$.next(null); }
-    else{ bsDownloaderService.selectedBsVersion$.next(props.version); }
-  }
-
-  const openReleasePage = () =>  { linkOpener.open(props.version.ReleaseURL) }
-
-  useEffect(() => {
-    const sub = bsDownloaderService.selectedBsVersion$.pipe(distinctUntilChanged()).subscribe((version) => {
-      setSelected(version?.BSVersion === props.version.BSVersion)
-    });
-
-    return () => {
-      sub.unsubscribe();
+    const toggleSelect = () => {
+        if(bsDownloaderService.isDownloading){ return; }
+        if(selected){ bsDownloaderService.selectedBsVersion$.next(null); }
+        else{ bsDownloaderService.selectedBsVersion$.next(props.version); }
     }
-  }, [])
+
+    const openReleasePage = () =>  { linkOpener.open(props.version.ReleaseURL) }
+
+    useEffect(() => {
+        const sub = bsDownloaderService.selectedBsVersion$.pipe(distinctUntilChanged()).subscribe((version) => {
+            setSelected(version?.BSVersion === props.version.BSVersion)
+        });
+
+        return () => {
+            sub.unsubscribe();
+        }
+    }, []);
 
     return (
         <motion.li className="group relative w-72 h-60 transition-transform active:scale-[.98]" onClick={toggleSelect} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>

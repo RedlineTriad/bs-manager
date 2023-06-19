@@ -18,6 +18,7 @@ import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
 import { BsmImage } from "../shared/bsm-image.component"
 import { BsmButton } from "../shared/bsm-button.component"
 import TextProgressBar from "../progress-bar/text-progress-bar.component"
+import { useService } from "renderer/hooks/use-service.hook"
 
 type Props = {
     version: BSVersion,
@@ -29,10 +30,10 @@ type Props = {
 
 export const LocalMapsListPanel = forwardRef(({version, className, filter, search, linked} : Props, forwardRef) => {
 
-    const mapsManager = MapsManagerService.getInstance();
-    const mapsDownloader = MapsDownloaderService.getInstance();
-    const bsaver = BeatSaverService.getInstance();
-    const os = OsDiagnosticService.getInstance();
+    const mapsManager = useService(MapsManagerService);
+    const mapsDownloader = useService(MapsDownloaderService);
+    const bsaver = useService(BeatSaverService);
+    const os = useService(OsDiagnosticService);
 
     const t = useTranslation();
     const ref = useRef(null)
