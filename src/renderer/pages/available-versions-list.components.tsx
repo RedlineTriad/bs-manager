@@ -14,16 +14,17 @@ import { ImportVersionModal } from "renderer/components/modal/modal-types/import
 import { IpcService } from "renderer/services/ipc.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export function AvailableVersionsList() {
 
-  const bsDownloaderService = BsDownloaderService.getInstance();
-  const versionManagerService = BSVersionManagerService.getInstance();
-  const progressBar = ProgressBarService.getInstance();
+  const bsDownloaderService = useService(BsDownloaderService);
+  const versionManagerService = useService(BSVersionManagerService);
+  const progressBar = useService(ProgressBarService);
   const modal = ModalService.getInsance();
-  const ipc = IpcService.getInstance();
-  const installer = BsDownloaderService.getInstance();
-  const notification = NotificationService.getInstance();
+  const ipc = useService(IpcService);
+  const installer = useService(BsDownloaderService);
+  const notification = useService(NotificationService);
 
   const [versionSelected, setVersionSelected] = useState(null as BSVersion);
   const [downloading, setDownloading] = useState(false);

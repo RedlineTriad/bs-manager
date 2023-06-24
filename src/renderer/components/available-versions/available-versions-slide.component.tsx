@@ -8,7 +8,7 @@ export function AvailableVersionsSlide(props: {year: string}) {
 
     const versionsService = useService(BSVersionManagerService);
     
-    const availableVersions = useObservable(versionsService.availableVersions$.pipe(filter(versions => !!versions?.length), map(() => versionsService.getAvaibleVersionsOfYear(props.year))), []);
+    const [availableVersions] = useObservable(versionsService.availableVersions$.pipe(filter(versions => !!versions?.length), map(() => versionsService.getAvaibleVersionsOfYear(props.year))), []);
 
     return (
         <ol className="w-full flex items-start justify-center gap-6 shrink-0 content-start flex-wrap p-4 overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">

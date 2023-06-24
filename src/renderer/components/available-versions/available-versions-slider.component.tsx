@@ -10,7 +10,7 @@ export function AvailableVersionsSlider() {
 
     const versionManagerService = useService(BSVersionManagerService);
 
-    const availableYears = useObservable(versionManagerService.availableVersions$.pipe(
+    const [availableYears] = useObservable(versionManagerService.availableVersions$.pipe(
         filter(versions => !!versions?.length),
         map(versionManagerService.getAvailableYearsOfVersions
     )), []);

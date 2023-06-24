@@ -9,6 +9,7 @@ import { BSVersion } from "shared/bs-version.interface"
 import { LaunchModToogle } from "./launch-mod-toogle.component";
 import BSLogo from '../../../../../../assets/images/apngs/bs-logo.png';
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
+import { useService } from "renderer/hooks/use-service.hook";
 
 type Props = {version: BSVersion};
 
@@ -16,8 +17,8 @@ export function LaunchSlide({version}: Props) {
 
     const t = useTranslation();
 
-    const configService = ConfigurationService.getInstance();
-    const bsLauncherService = BSLauncherService.getInstance();
+    const configService = useService(ConfigurationService);
+    const bsLauncherService = useService(BSLauncherService);
 
     const [oculusMode, setOculusMode] = useState(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
     const [desktopMode, setDesktopMode] = useState(!!configService.get<boolean>(LaunchMods.DESKTOP_MOD));
@@ -25,7 +26,7 @@ export function LaunchSlide({version}: Props) {
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
     const [additionalArgsString, setAdditionalArgsString] = useState<string>(configService.get<string>("additionnal-args") || "");
 
-    const launchState = useObservable(bsLauncherService.launchState$);
+    const [launchState] = useObservable(bsLauncherService.launchState$);
 
     useEffect(() => {
         configService.set("additionnal-args", additionalArgsString);

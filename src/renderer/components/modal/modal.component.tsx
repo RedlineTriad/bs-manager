@@ -4,19 +4,20 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useEffect } from "react";
 import { BsmIcon } from "../svgs/bsm-icon.component";
+import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 
 export function Modal() {
 
    const modalSevice = ModalService.getInsance();
 
-   const ModalComponent = useObservable(modalSevice.getModalToShow());
+   const [ModalComponent] = useObservable(modalSevice.getModalToShow());
 
    const modalData = modalSevice.getModalData();
    const resolver = modalSevice.getResolver();
 
    const {firstColor, secondColor} = useThemeColor();
 
-    useEffect(() => {
+    useOnUpdate(() => {
         
         const onEscape = (e: KeyboardEvent) => {
             if(e.key !== "Escape"){ return; }

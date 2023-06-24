@@ -71,7 +71,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
         onDoubleClick: e => onDoubleClick?.(callBackParam)
     })
 
-    const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
+    const [songPlaying] = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
     const zipUrl = getMapZipUrlFromHash(hash);
     const previewUrl = mapId ? `https://skystudioapps.com/bs-viewer/?url=${zipUrl}` : null;

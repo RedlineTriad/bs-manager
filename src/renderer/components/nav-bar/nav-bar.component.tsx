@@ -11,18 +11,14 @@ import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 import Tippy from '@tippyjs/react';
 import { useTranslation } from 'renderer/hooks/use-translation.hook';
 import { useService } from 'renderer/hooks/use-service.hook';
-import { I18nService } from 'renderer/services/i18n.service';
 
 export function NavBar() {
 
     const bsVersionService =  useService(BSVersionManagerService);
 
-    const installedVersions = useObservable(bsVersionService.installedVersions$);
+    const [installedVersions] = useObservable(bsVersionService.installedVersions$);
     const color = useThemeColor("first-color");
     const t = useTranslation();
-
-    // TODO : Remove that, but without that things in nav bar are not automatically re-translated idk why ¯\_(ツ)_/¯
-    useObservable(I18nService.getInstance().currentLanguage$);
 
     return (
         <nav id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-1'>

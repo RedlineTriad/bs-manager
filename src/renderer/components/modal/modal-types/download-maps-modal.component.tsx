@@ -28,8 +28,8 @@ export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedM
     const progressBar = useService(ProgressBarService);
     const os = useService(OsDiagnosticService);
 
-    const currentDownload = useObservable(mapsDownloader.currentMapDownload$);
-    const mapsInQueue = useObservable(mapsDownloader.mapsInQueue$);
+    const [currentDownload] = useObservable(mapsDownloader.currentMapDownload$);
+    const [mapsInQueue] = useObservable(mapsDownloader.mapsInQueue$);
     const t = useTranslation();
     const filterContainerRef = useRef(null);
     const [filter, setFilter] = useState<MapFilter>({});
@@ -38,7 +38,7 @@ export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedM
     const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
-    const isOnline = useObservable(os.isOnline$);
+    const [isOnline] = useObservable(os.isOnline$);
     const [searchParams, setSearchParams] = useState<SearchParams>({
         sortOrder,
         filter,

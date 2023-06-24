@@ -38,7 +38,7 @@ export function MapsPlaylistsPanel({version}: Props) {
     const [playlistSearch, setPlaylistSearch] = useState("");
     const [mapsLinked, setMapsLinked] = useState(false);
     const [linkingPending, setLinkingPending] = useState(false);
-    const isOnline = useObservable(osDiagnostic.isOnline$);
+    const [isOnline] = useObservable(osDiagnostic.isOnline$);
     const color = useThemeColor("first-color");
     const t = useTranslation();
     const mapsRef = useRef<any>();

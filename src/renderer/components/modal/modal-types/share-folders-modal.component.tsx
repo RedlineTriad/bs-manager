@@ -109,8 +109,8 @@ const FolderItem = ({version, relativeFolder, onDelete}: FolderProps) => {
         tap: {rotate: 45}
     };
 
-    const pending = useObservable(linker.isPending(version, relativeFolder));
-    const processing = useObservable(linker.isProcessing(version, relativeFolder));
+    const [pending] = useObservable(linker.isPending(version, relativeFolder));
+    const [processing] = useObservable(linker.isProcessing(version, relativeFolder));
     const linkDisabled = pending || processing;
 
     const [linked, setLinked] = useState(false);

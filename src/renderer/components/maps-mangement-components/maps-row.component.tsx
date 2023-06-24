@@ -17,7 +17,7 @@ type Props = {
 
 export const MapsRow = memo(({maps, style, selectedMaps$, onMapSelect, onMapDelete}: Props) => {
 
-    const selectedMaps = useObservable<BsmLocalMap[]>(selectedMaps$.pipe(
+    const [selectedMaps] = useObservable<BsmLocalMap[]>(selectedMaps$.pipe(
         map(selectedMaps => selectedMaps.filter(selected => maps.some(map => map.hash === selected.hash))),
         distinctUntilChanged(equal)
     ), []);

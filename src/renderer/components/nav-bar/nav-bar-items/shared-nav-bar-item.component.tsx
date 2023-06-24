@@ -13,7 +13,7 @@ export function SharedNavBarItem() {
     const pageState = useService(PageStateService);
 
     const t = useTranslation();
-    const route = useObservable(pageState.route$);
+    const [route] = useObservable(pageState.route$);
     const color = useThemeColor("first-color");
 
     return (

@@ -16,14 +16,15 @@ import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-
 import { MapsPlaylistsPanel } from 'renderer/components/maps-mangement-components/maps-playlists-panel.component';
 import { ShareFoldersModal } from 'renderer/components/modal/modal-types/share-folders-modal.component';
 import { ModelsPanel } from 'renderer/components/models-management/models-panel.component';
+import { useService } from 'renderer/hooks/use-service.hook';
 
 export function VersionViewer() {
 
-    const bsUninstallerService = BSUninstallerService.getInstance();
-    const bsVersionManagerService = BSVersionManagerService.getInstance();
+    const bsUninstallerService = useService(BSUninstallerService);
+    const bsVersionManagerService = useService(BSVersionManagerService);
     const modalService = ModalService.getInsance();
-    const bsDownloaderService = BsDownloaderService.getInstance();
-    const ipcService = IpcService.getInstance();
+    const bsDownloaderService = useService(BsDownloaderService);
+    const ipcService = useService(IpcService);
 
     const {state} = useLocation() as {state: BSVersion};
     const navigate = useNavigate();

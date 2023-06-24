@@ -4,14 +4,15 @@ import BeatRunningImg from "../../../../assets/images/apngs/beat-running.png"
 import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export function BsmProgressBar() {
 
-    const progressBarService = ProgressBarService.getInstance();
+    const progressBarService = useService(ProgressBarService);
 
-    const progressData = useObservable(progressBarService.progressData$);
-    const visible = useObservable(progressBarService.visible$);
-    const style = useObservable(progressBarService.style$);
+    const [progressData] = useObservable(progressBarService.progressData$);
+    const [visible] = useObservable(progressBarService.visible$);
+    const [style] = useObservable(progressBarService.style$);
 
     const progressLabel = (() => {
         if(!progressData){ return ""; }

@@ -1,8 +1,7 @@
 import { BSVersion } from 'shared/bs-version.interface';
 import { Link, useLocation } from "react-router-dom";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
-import { useEffect, useState } from "react";
-import { combineLatest, Subscription } from "rxjs";
+import { distinctUntilChanged, map, of, switchMap } from "rxjs";
 import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSUninstallerService } from "renderer/services/bs-uninstaller.service";
@@ -12,61 +11,56 @@ import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 import { NavBarItem } from './nav-bar-item.component';
 import useFitText from 'use-fit-text';
 import Tippy from '@tippyjs/react';
+import { useService } from 'renderer/hooks/use-service.hook';
+import { useObservable } from 'renderer/hooks/use-observable.hook';
+import equal from 'fast-deep-equal';
 
 export function BsVersionItem(props: {version: BSVersion}) {
 
-  const downloaderService = BsDownloaderService.getInstance();
-  const verionManagerService = BSVersionManagerService.getInstance();
-  const launcherService = BSLauncherService.getInstance();
-  const configService = ConfigurationService.getInstance();
-  const bsUninstallerService = BSUninstallerService.getInstance();
+    const downloaderService = useService(BsDownloaderService);
+    const verionManagerService = useService(BSVersionManagerService);
+    const launcherService = useService(BSLauncherService);
+    const configService = useService(ConfigurationService);
+    const bsUninstallerService = useService(BSUninstallerService);
 
-  const { state } = useLocation() as { state: BSVersion};
-  const { fontSize, ref } = useFitText();
+    const { state } = useLocation() as { state: BSVersion};
+    const { fontSize, ref } = useFitText();
 
-  const [downloading, setDownloading] = useState(false);
-  const [downloadPercent, setDownloadPercent] = useState(0);
-  const secondColor = useThemeColor("second-color");
+    const [downloading, downloading$] = useObservable(downloaderService.currentBsVersionDownload$.pipe(
+        map(version => equal(props.version, version)),
+        distinctUntilChanged()
+    ), false);
 
-  const isActive = (): boolean => {
-    return props.version?.BSVersion === state?.BSVersion && props?.version.steam === state?.steam && props?.version.oculus === state?.oculus && props?.version.name === state?.name;
-  }
+    const [downloadPercent] = useObservable(downloading$.pipe(
+        switchMap(downloading => downloading ? downloaderService.downloadProgress$ : of(0)),
+        distinctUntilChanged()
+    ));
 
-   const handleDoubleClick = () => {
-      launcherService.launch(
-         state,
-         !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
-         !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
-         !!configService.get<boolean>(LaunchMods.DEBUG_MOD)
-      )
-   }
+    const secondColor = useThemeColor("second-color");
+
+    const isActive = (): boolean => {
+        return props.version?.BSVersion === state?.BSVersion && props?.version.steam === state?.steam && props?.version.oculus === state?.oculus && props?.version.name === state?.name;
+    }
+
+    const handleDoubleClick = () => {
+        launcherService.launch(
+            state,
+            !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
+            !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
+            !!configService.get<boolean>(LaunchMods.DEBUG_MOD)
+        )
+    }
 
     const cancel = () => {
         const versionDownload = downloaderService.currentBsVersionDownload$.value;
         const wasVerification = downloaderService.isVerification;
         downloaderService.cancelDownload().then(async res => {
-        if(!res.success){ return; }
-        if(!wasVerification){
-            bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
-         }
-      });
-   }
-
-   useEffect(() => {
-      const subs: Subscription[] = [];
-      const downloadSub = combineLatest([downloaderService.currentBsVersionDownload$, downloaderService.downloadProgress$]).subscribe(vals => {
-         if(vals[0]?.BSVersion === props.version.BSVersion && vals[0]?.steam === props.version.steam && vals[0].oculus === props.version.oculus && vals[0]?.name === props.version.name){
-            setDownloading(true);
-            setDownloadPercent(vals[1]);
-         }
-         else{
-            setDownloading(false);
-            setDownloadPercent(0);
-         }
-      });
-      subs.push(downloadSub);
-      return () => { subs.forEach(s => s.unsubscribe()); }
-  }, []);
+            if(!res.success){ return; }
+            if(!wasVerification){
+                bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
+            }
+        });
+    }
 
     const renderIcon = () => {
         const classes = "w-[19px] h-[19px] mr-[5px] shrink-0"

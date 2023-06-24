@@ -11,8 +11,8 @@ export function useThemeColor(themeColor?: ThemeColor): string|{firstColor: stri
     const configService = useService(ConfigurationService);
 
    
-    const firstColor = useObservable(!themeColor ? configService.watch<string>("first-color" as DefaultConfigKey).pipe(throttleTime(16)) : configService.watch<string>(themeColor).pipe(throttleTime(16)));
-    const secondColor = useObservable(!themeColor ? configService.watch<string>("second-color" as DefaultConfigKey).pipe(throttleTime(16)) : of(""));
+    const [firstColor] = useObservable(!themeColor ? configService.watch<string>("first-color" as DefaultConfigKey).pipe(throttleTime(16)) : configService.watch<string>(themeColor).pipe(throttleTime(16)));
+    const [secondColor] = useObservable(!themeColor ? configService.watch<string>("second-color" as DefaultConfigKey).pipe(throttleTime(16)) : of(""));
 
     if(themeColor){
         return firstColor;
